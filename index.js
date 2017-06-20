@@ -37,6 +37,8 @@ AFRAME.registerComponent('mouse-cursor', {
 		this.__onRelease = this._onRelease.bind(this)
 		this.__onTouchMove = this._onTouchMove.bind(this)
 		this.__onComponentChanged = this._onComponentChanged.bind(this)
+
+		this._debugIndicator = setupDebugIndicator(this.el.sceneEl)
 	},
 
 	/**
@@ -82,7 +84,7 @@ AFRAME.registerComponent('mouse-cursor', {
 	},
 
 	/*==============================
-	 =            events            =
+	 =						events						=
 	 ==============================*/
 
 	/**
@@ -280,7 +282,7 @@ AFRAME.registerComponent('mouse-cursor', {
 
 
 	/*=============================
-	 =            mouse            =
+	 =						mouse						=
 	 =============================*/
 
 
@@ -354,7 +356,7 @@ AFRAME.registerComponent('mouse-cursor', {
 
 
 	/*======================================
-	 =            scene children            =
+	 =						scene children						=
 	 ======================================*/
 
 
@@ -383,7 +385,7 @@ AFRAME.registerComponent('mouse-cursor', {
 	},
 
 	/*====================================
-	 =            intersection            =
+	 =						intersection						=
 	 ====================================*/
 
 	/**
@@ -408,8 +410,10 @@ AFRAME.registerComponent('mouse-cursor', {
 			/* get the closest three obj */
 			let obj
 			intersects.every(item => {
-				if (item.object.parent.visible === true) {
+				if (item.object.parent.visible === true &&
+						item.object !== this._debugIndicator.object3D.children[0]) {
 					obj = item.object
+					updateDebugIndicator(this._debugIndicator, item.point)
 					return false
 				}
 				else {
@@ -465,7 +469,7 @@ AFRAME.registerComponent('mouse-cursor', {
 
 
 	/*===============================
-	 =            emitter            =
+	 =						emitter						=
 	 ===============================*/
 
 	/**
@@ -478,3 +482,17 @@ AFRAME.registerComponent('mouse-cursor', {
 	},
 
 })
+
+
+function setupDebugIndicator(sceneEl) {
+	const indicator = document.createElement('a-box')
+	indicator.setAttribute('color', 'red')
+	indicator.setAttribute('scale', '0.1 0.1 0.1')
+	sceneEl.appendChild(indicator)
+
+	return indicator
+}
+
+function updateDebugIndicator(indicator, position) {
+	indicator.setAttribute('position', position)
+}
